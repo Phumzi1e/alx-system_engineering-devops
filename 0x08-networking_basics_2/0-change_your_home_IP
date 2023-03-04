@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Update the hosts file to map localhost to 127.0.0.2
+echo "127.0.0.2 localhost" | sudo tee -a /etc/hosts
+
+# Update the DNS resolver configuration file to use 8.8.8.8 as the DNS server for facebook.com
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolver/facebook.com
+
+# Restart the DNS resolver service to apply the changes
+sudo systemctl restart systemd-resolved.service
+
