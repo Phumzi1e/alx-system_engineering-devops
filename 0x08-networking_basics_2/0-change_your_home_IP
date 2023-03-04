@@ -1,11 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# This script configures an Ubuntu server with the below requirements.
+# localhost resolves to 127.0.0.2
+# facebook.com resolves to 8.8.8.8
 
-# Update the hosts file to map localhost to 127.0.0.2
-echo "127.0.0.2 localhost" | sudo tee -a /etc/hosts
+# cp /etc/hosts ~/hosts.new
+# sed -i 's/127.0.0.1\tlocalhost/127.0.0.2 localhost\n8.8.8.8 facebook.com/' ~/hosts.new
+# cp -f ~/hosts.new /etc/hosts
 
-# Update the DNS resolver configuration file to use 8.8.8.8 as the DNS server for facebook.com
-echo "nameserver 8.8.8.8" | sudo tee /etc/resolver/facebook.com
+# OR
+# cp /etc/hosts ~/hosts.new
+# sed -i 's/.*localhost/127.0.0.2 localhost/g' ~/hosts.new
+# sed -i 's/.*facebook.com//g' ~/hosts.new
+# sed -i '1 a 8.8.8.8 facebook.com' ~/hosts.new
+# cp -f ~/hosts.new /etc/hosts
 
-# Restart the DNS resolver service to apply the changes
-sudo systemctl restart systemd-resolved.service
-
+# OR
+cp /etc/hosts new_hosts
+sed -i s/^127.*/"127.0.0.2 localhost"/ new_hosts
+echo "8.8.8.8 facebook.com" >> new_hosts
+cp new_hosts /etc/hosts
