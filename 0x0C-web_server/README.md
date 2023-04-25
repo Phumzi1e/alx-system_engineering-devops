@@ -1,1 +1,1 @@
-7-puppet_install_nginx_web_server.pp
+2-setup_a_domain_name
