@@ -1,23 +1,48 @@
 #!/usr/bin/python3
-"""Script that prints out top ten hottest gists
-of a subreddit"""
+""" Recurse it! """
+from requests import get
 
-import requests
+REDDIT = "https://www.reddit.com/"
+HEADERS = {'user-agent': 'my-app/0.0.1'}
 
 
-def top_ten(subreddit):
-    """Function that fetches top 10 gists"""
-    apiUrl = "https://reddit.com/r/{}/hot.json".format(subreddit)
-    userAgent = "Mozilla/5.0"
-    limits = 10
+def recurse(subreddit, hot_list=[], after=""):
+    """
+    Returns a list containing the titles of all hot articles for a given
+    subreddit. If no results are found for the given subreddit, the function
+    should return None.
+    """
+    if after is None:
+        return hot_list
 
-    response = requests.get(
-        apiUrl, headers={"user-agent": userAgent}, params={"limit": limits})
-    if not response:
-        print('None')
-        return
-    response = response.json()
-    list_obj = response['data']['children']
-    for obj in list_obj:
-        print(obj['data']['title'])
-    return
+    url = REDDIT + "r/{}/hot/.json".format(subreddit)
+
+    params = {
+        'limit': 100,
+        'after': after
+    }
+
+    r = get(url, headers=HEADERS, params=params, allow_redirects=False)
+
+    if r.status_code != 200:
+        return None
+
+    try:
+        js = r.json()
+
+    except ValueError:
+        return None
+
+    try:
+
+        data = js.get("data")
+        after = data.get("after")
+        children = data.get("children")
+        for child in children:
+            post = child.get("data")
+            hot_list.append(post.get("title"))
+
+    except Exception:
+        return None
+
+    return recurse(subreddit, hot_list, after)
